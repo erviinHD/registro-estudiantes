@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using registroEstudiantes.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using registroEstudiantes.Models;
 
 namespace registroEstudiantes
 {
@@ -33,6 +34,10 @@ namespace registroEstudiantes
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
+            // Basado en la base de datos  (registro)
+            // Coneccion a la BDDC:\Users\ervin\Desktop\Curso .NET\registroEstudiantes\registroEstudiantes\Views\
+            services.AddDbContext<registroContext>(options => 
+            options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
