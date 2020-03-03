@@ -34,22 +34,30 @@ namespace registroEstudiantes
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
-            // Basado en la base de datos  (registro)
-            // Coneccion a la BDDC:\Users\ervin\Desktop\Curso .NET\registroEstudiantes\registroEstudiantes\Views\
-            services.AddDbContext<registroContext>(options => 
+            // ----------- Basado en la base de datos  (registro)
+            // ----------- Coneccion a la BDDC:
+            services.AddDbContext<registroContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
-            services.AddDefaultIdentity<IdentityUser>()
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            // -------------- Agregamos las nuevas clases ya no usaremos las del frmework 
+            services.AddIdentity<ApplicationUser, ApplicationRole>(options => options.Stores.MaxLengthForKeys = 128)
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultUI().AddDefaultTokenProviders();
+
+            //services.AddDefaultIdentity<IdentityUser>()
+            //    .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env,
+            ApplicationDbContext context, RoleManager<ApplicationRole> roleManager,
+            UserManager<ApplicationUser> userManager)
         {
             if (env.IsDevelopment())
             {
@@ -74,6 +82,8 @@ namespace registroEstudiantes
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            DummyData.Initialize(context, userManager, roleManager).Wait();
         }
     }
 }

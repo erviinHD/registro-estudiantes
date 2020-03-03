@@ -83,7 +83,7 @@ namespace registroEstudiantes.Controllers
             {
                 return NotFound();
             }
-            ViewData["IdMateria"] = new SelectList(_context.Materias, "IdMateria", "IdMateria", estudiantes.IdMateria);
+            ViewData["IdMateria"] = new SelectList(_context.Materias, "IdMateria", "Nombre", estudiantes.IdMateria);
             return View(estudiantes);
         }
 
